@@ -1,5 +1,9 @@
 Revision history for Perl extension Date::Object.
 
+0.05  2005-01-05
+      - Fixed sub_day bug.
+      - Added method set() where is possible to reset parts of the date.
+      - Methods set*, add*, sub* will return the object to allow chain calls.
 
 0.04  2004-10-16
       - Added storable support.

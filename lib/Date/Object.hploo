@@ -19,7 +19,7 @@ sub Date::O_zone  { Date::Object->new_zone(@_) ;}
 sub Date::check   { Date::Object::check(@_) ;}
 sub Date::timelocal  { Date::Object::timelocal(@_) ;}
 
-class Date::Object [0.04] {
+class Date::Object [0.05] {
 
   no warnings ;
 
@@ -140,11 +140,15 @@ class Date::Object [0.04] {
   sub set_gmt ($time) {
     ($this->{sec} , $this->{min} , $this->{hour} , $this->{day} , $this->{month} , $this->{year} , $this->{wday} , $this->{yday} , $this->{isdst} ) = $this->gmtime($time) ;
     $this->{zone} = 0 ;
+    
+    return $this ;
   }
   
   sub set_local ($time , $local_zone) {
     ($this->{sec} , $this->{min} , $this->{hour} , $this->{day} , $this->{month} , $this->{year} , $this->{wday} , $this->{yday} , $this->{isdst} ) = $this->localtime($time) ;
     $this->{zone} = $this->_calc_timezone if $local_zone eq '' ;
+    
+    return $this ;
   }
   
   sub set_zone ($zone , $time) {
@@ -166,6 +170,8 @@ class Date::Object [0.04] {
       }
       else { $this->{isdst} = 0 ;}
     }
+    
+    return $this ;
   }
   
   sub set_serial ($serial) {
@@ -180,6 +186,24 @@ class Date::Object [0.04] {
     $zone *= 1 ;
     
     $this->set_zone($zone , $time) ;
+    
+    return $this ;
+  }
+  
+  sub set ($y , $mo , $d , $h , $m , $s) {
+    $y = $this->{y} if !defined $y ;
+    $mo = $this->{mo} if !defined $mo ;
+    $d = $this->{d} if !defined $d ;
+    $h = $this->{h} if !defined $h ;
+    $m = $this->{m} if !defined $m ;
+    $s = $this->{s} if !defined $s ;
+    
+    if ( $d > $this->check($mo) ) { $d = $this->check($mo) ;}
+
+    my $new_date = Date::Object->new_zone( $this->zone , $y , $mo , $d , $h , $m , $s ) ;
+    $this->set_serial( $new_date->serial ) ;
+    
+    return $this ;
   }
   
   sub _format_zone ($zone) {
@@ -315,12 +339,12 @@ class Date::Object [0.04] {
     $this->add_month(12*$years) ;
   }
   
-  sub sub_sec  ($n) { $this->add_sec(  $n*-1 ) ;}
-  sub sub_min  ($n) { $this->add_min(  $n*-1 ) ;}
-  sub sub_hour ($n) { $this->add_hour( $n*-1 ) ;}
-  sub sub_day  ($n) { $this->add_day(  $n*-1 ) ;}
-  sub sub_week ($n) { $this->add_week( $n*-1 ) ;}
-  sub sub_year ($n) { $this->add_year( $n*-1 ) ;}
+  sub sub_sec  ($n) { $n ||= 1 ; $this->add_sec(  $n*-1 ) ;}
+  sub sub_min  ($n) { $n ||= 1 ; $this->add_min(  $n*-1 ) ;}
+  sub sub_hour ($n) { $n ||= 1 ; $this->add_hour( $n*-1 ) ;}
+  sub sub_day  ($n) { $n ||= 1 ; $this->add_day(  $n*-1 ) ;}
+  sub sub_week ($n) { $n ||= 1 ; $this->add_week( $n*-1 ) ;}
+  sub sub_year ($n) { $n ||= 1 ; $this->add_year( $n*-1 ) ;}
   
   sub gmtime ($time) {
     $time ||= $this->{time} || time ;
@@ -410,7 +434,6 @@ class Date::Object [0.04] {
     $timelocal += 60*60*($zone*-1) if $zone ;
       
     return $timelocal ;
-    
   }
   
   sub check {
@@ -901,6 +924,10 @@ To load:
   my $d_serial = "SELECT date FROM foo WHERE (id == 1)" ;
   
   my $date = Date::Object::new_serial($d_serial) ;
+
+==> set (YEAR , MONTH , DAY , HOUR , MIN , SEC)
+Set the date of the object. If some argument is B<undef>, the previous value of
+the pbject will be used as default.
 
 ==> set_gmt
 Set the date to the GMT timezone (0).

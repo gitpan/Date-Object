@@ -3,7 +3,7 @@
 ###use Data::Dumper ; print Dumper(  ) ;
 
 use Test;
-BEGIN { plan tests => 36 } ;
+BEGIN { plan tests => 45 } ;
 
 use Date::Object ;
 
@@ -224,6 +224,23 @@ sub synchronize {
     ok($date1 , $date2) ;
   
   }
+}
+#########################
+{
+
+  my $date1 = Date::O_gmt( 2004 , 5 , 19 , 21 , 30 ) ;
+  my $date2 = Date::O_gmt( $date1->{y} , $date1->{mo} , 1 ) ;
+  
+  $date2->add_month ;
+  $date2->sub_day ;
+  
+  ok($date1 , '2004-05-19 21:30:00') ;
+  ok($date2 , '2004-05-31 00:00:00') ;
+  
+  $date1->set( undef , undef , 32 ) ;
+  
+  ok($date1 , '2004-05-31 21:30:00') ;
+
 }
 #########################
 
