@@ -3,7 +3,7 @@
 ###use Data::Dumper ; print Dumper(  ) ;
 
 use Test;
-BEGIN { plan tests => 45 } ;
+BEGIN { plan tests => 48 } ;
 
 use Date::Object ;
 
@@ -240,6 +240,20 @@ sub synchronize {
   $date1->set( undef , undef , 32 ) ;
   
   ok($date1 , '2004-05-31 21:30:00') ;
+
+}
+#########################
+{
+
+  my $d = Date::Object->new_local(2005 , 1 , 5 , 20 , 0 , 0) ;
+  my $d2 = Date::Object->new_local(2005 , 1 , 31 , 20 , 0 , 0) ;
+  my $d_gmt = Date::Object->new_gmt(2005 , 1 , 31 , 23 , 0 , 0) ;
+  
+  my $d_end = $d->clone->set(undef,undef,31) ;
+  
+  ok($d != $d_end) ;
+  ok($d2 == $d_end) ;
+  ok($d_gmt == $d_end) ;
 
 }
 #########################

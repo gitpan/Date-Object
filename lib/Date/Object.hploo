@@ -19,7 +19,7 @@ sub Date::O_zone  { Date::Object->new_zone(@_) ;}
 sub Date::check   { Date::Object::check(@_) ;}
 sub Date::timelocal  { Date::Object::timelocal(@_) ;}
 
-class Date::Object [0.05] {
+class Date::Object [0.06] {
 
   no warnings ;
 
@@ -140,14 +140,14 @@ class Date::Object [0.05] {
   sub set_gmt ($time) {
     ($this->{sec} , $this->{min} , $this->{hour} , $this->{day} , $this->{month} , $this->{year} , $this->{wday} , $this->{yday} , $this->{isdst} ) = $this->gmtime($time) ;
     $this->{zone} = 0 ;
-    
+    $this->{time} = $time ;
     return $this ;
   }
   
   sub set_local ($time , $local_zone) {
     ($this->{sec} , $this->{min} , $this->{hour} , $this->{day} , $this->{month} , $this->{year} , $this->{wday} , $this->{yday} , $this->{isdst} ) = $this->localtime($time) ;
     $this->{zone} = $this->_calc_timezone if $local_zone eq '' ;
-    
+    $this->{time} = $this->timelocal($this->{year} , $this->{month} , $this->{day} , $this->{hour} , $this->{min} , $this->{sec} , $this->{zone} ) ;
     return $this ;
   }
   
@@ -158,7 +158,7 @@ class Date::Object [0.05] {
     $time ||= $this->time ;
     
     $this->{zone} = $zone ;
-
+    
     my $time_gmt = $time + (60*60*$zone) ;
     
     ($this->{sec} , $this->{min} , $this->{hour} , $this->{day} , $this->{month} , $this->{year} , $this->{wday} , $this->{yday} , $this->{isdst} ) = $this->gmtime($time_gmt) ;
@@ -171,6 +171,7 @@ class Date::Object [0.05] {
       else { $this->{isdst} = 0 ;}
     }
     
+    $this->{time} = $time ;
     return $this ;
   }
   

@@ -2,7 +2,7 @@
 ## This file was generated automatically by Class::HPLOO/0.18
 ##
 ## Original file:    ./lib/Date/Object.hploo
-## Generation date:  2005-01-04 16:19:12
+## Generation date:  2005-01-05 20:52:25
 ##
 ## ** Do not change this file, use the original HPLOO source! **
 #############################################################################
@@ -33,7 +33,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
 
   use vars qw(%CLASS_HPLOO @ISA $VERSION) ;
 
-  $VERSION = '0.05' ;
+  $VERSION = '0.06' ;
 
   @ISA = qw(Class::HPLOO::Base UNIVERSAL) ;
 
@@ -459,7 +459,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     
     ($this->{sec} , $this->{min} , $this->{hour} , $this->{day} , $this->{month} , $this->{year} , $this->{wday} , $this->{yday} , $this->{isdst} ) = $this->gmtime($time) ;
     $this->{zone} = 0 ;
-    
+    $this->{time} = $time ;
     return $this ;
   }
   
@@ -471,7 +471,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     
     ($this->{sec} , $this->{min} , $this->{hour} , $this->{day} , $this->{month} , $this->{year} , $this->{wday} , $this->{yday} , $this->{isdst} ) = $this->localtime($time) ;
     $this->{zone} = $this->_calc_timezone if $local_zone eq '' ;
-    
+    $this->{time} = $this->timelocal($this->{year} , $this->{month} , $this->{day} , $this->{hour} , $this->{min} , $this->{sec} , $this->{zone} ) ;
     return $this ;
   }
   
@@ -487,7 +487,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     $time ||= $this->time ;
     
     $this->{zone} = $zone ;
-
+    
     my $time_gmt = $time + (60*60*$zone) ;
     
     ($this->{sec} , $this->{min} , $this->{hour} , $this->{day} , $this->{month} , $this->{year} , $this->{wday} , $this->{yday} , $this->{isdst} ) = $this->gmtime($time_gmt) ;
@@ -500,6 +500,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
       else { $this->{isdst} = 0 ;}
     }
     
+    $this->{time} = $time ;
     return $this ;
   }
   

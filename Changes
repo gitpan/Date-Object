@@ -1,5 +1,9 @@
 Revision history for Perl extension Date::Object.
 
+0.06  2005-01-05
+      - Fixed bug on method set() that forgot to set the new internal value of time.
+      - Force reset of key time when set_local(), set_zone() and set_gmt() are called.
+
 0.05  2005-01-05
       - Fixed sub_day bug.
       - Added method set() where is possible to reset parts of the date.
