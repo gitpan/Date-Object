@@ -1,8 +1,8 @@
 #############################################################################
-## This file was generated automatically by Class::HPLOO/0.13
+## This file was generated automatically by Class::HPLOO/0.14
 ##
 ## Original file:    ./lib/Date/Object.hploo
-## Generation date:  2004-06-29 03:08:51
+## Generation date:  2004-08-20 04:38:50
 ##
 ## ** Do not change this file, use the original HPLOO source! **
 #############################################################################
@@ -32,7 +32,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   use strict qw(vars) ; no warnings ;
 
   use vars qw($VERSION) ;
-  $VERSION = '0.02' ;
+  $VERSION = '0.03' ;
 
   use vars qw(@ISA) ; @ISA = qw(UNIVERSAL) ;
 
@@ -224,13 +224,29 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     
     my $time ;
     if ( !@_ ) { $time = time ;}
-    elsif ( $#_ == 0 ) {
+    elsif ( $#_ == 0 || $#_ == 1 ) {
       if ( ref($_[0]) && UNIVERSAL::isa($_[0],'Date::Object') ) {
         $time = $_[0]->time ;
         $zone = $_[0]->zone if $zone eq '' ;
       }
-      elsif ( length($_[0]) >= 14 ) {
+      elsif ( length($_[0]) >= 14 && $_[0] =~ /^\d+$/ ) {
         return new_serial('Date::Object',$_[0]) ;
+      }
+      elsif ( $_[0] =~ /^\s*(\d+)\D+(\d+)\D+(\d+)(?:\s+(\d\d?)\D+(\d\d?)(?:\D+(\d\d?))?)?/ ) {
+        my ( $d , $m , $y , $h , $min , $s ) ;
+        my @match = ($1 , $2 , $3 , $4 , $5 , $6) ;
+
+        if ( $_[1] =~ /mdy/i ) {
+          ( $m , $d , $y , $h , $min , $s ) = @match ;
+        }
+        elsif ( $_[1] =~ /ymd/i ) {
+          ( $y , $m , $d , $h , $min , $s ) = @match ;
+        }
+        else {
+          ( $d , $m , $y , $h , $min , $s ) = @match ;
+        }
+      
+        $time = $this->timelocal($y , $m , $d , $h , $min , $s , 0 ) ;
       }
       elsif ( $_[0] >= 0 ) { $time = $_[0] ;}
       else { $time = 0 ;}
@@ -906,6 +922,14 @@ To create a I<Date::Object> you can use different types of arguments:
 =item YEAR , MONTH , DAY , HOUR , MIN , SEC , ZONE
 
   Date::Object->new( 2004 , 12 , 25 , 15 , 30 , 59 ) ;
+
+=item DD/MM/YY HH:MM:SS formats:
+
+  Date::Object->new( "25/12/2004 15:30:59" ) ;
+  Date::Object->new( "25/12/2004 15:30:59" , 'dmy' ) ;
+  
+  Date::Object->new( "12/25/2004 15:30:59" , 'mdy' ) ;
+  Date::Object->new( "2004/12/25 15:30:59" , 'ymd' ) ;
 
 =item Date::Object
 

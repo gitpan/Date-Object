@@ -3,7 +3,7 @@
 ###use Data::Dumper ; print Dumper(  ) ;
 
 use Test;
-BEGIN { plan tests => 35 } ;
+BEGIN { plan tests => 36 } ;
 
 use Date::Object ;
 
@@ -181,6 +181,15 @@ sub synchronize {
   
   ok($serial , $date2->serial) ;
   
+}
+#########################
+{
+
+  my $date1 = Date::O_gmt( 2004 , 5 , 19 , 21 , 30 ) ;
+  my $date2 = Date::O( "2004/5/19 21:30" , 'ymd') ;
+  
+  ok($date1 , $date2) ;
+
 }
 #########################
 
