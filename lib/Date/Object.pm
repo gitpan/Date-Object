@@ -1,8 +1,8 @@
 #############################################################################
-## This file was generated automatically by Class::HPLOO/0.12
+## This file was generated automatically by Class::HPLOO/0.13
 ##
 ## Original file:    ./lib/Date/Object.hploo
-## Generation date:  2004-03-20 22:24:39
+## Generation date:  2004-06-29 03:08:51
 ##
 ## ** Do not change this file, use the original HPLOO source! **
 #############################################################################
@@ -32,24 +32,27 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   use strict qw(vars) ; no warnings ;
 
   use vars qw($VERSION) ;
-  $VERSION = '0.01' ;
+  $VERSION = '0.02' ;
+
+  use vars qw(@ISA) ; @ISA = qw(UNIVERSAL) ;
 
   my (%CLASS_HPLOO) ;
  
   sub new { 
     my $class = shift ;
     my $this = bless({} , $class) ;
+    no warnings ;
     my $undef = \'' ;
     sub UNDEF {$undef} ;
     if ( $CLASS_HPLOO{ATTR} ) {
     foreach my $Key ( keys %{$CLASS_HPLOO{ATTR}} ) {
-    tie( $this->{$Key} => 'Class::HPLOO::TIESCALAR' , $CLASS_HPLOO{ATTR}{$Key}{tp} , $CLASS_HPLOO{ATTR}{$Key}{pr} , \$this->{CLASS_HPLOO_ATTR}{$Key} ) if !exists $this->{$Key} ;
+    tie( $this->{$Key} => 'Class::HPLOO::TIESCALAR' , $this , $CLASS_HPLOO{ATTR}{$Key}{tp} , $CLASS_HPLOO{ATTR}{$Key}{pr} , \$this->{CLASS_HPLOO_ATTR}{$Key} ) if !exists $this->{$Key} ;
     } }  my $ret_this = defined &Object ? $this->Object(@_) : undef ;
     if ( ref($ret_this) && UNIVERSAL::isa($ret_this,$class) ) {
     $this = $ret_this ;
     if ( $CLASS_HPLOO{ATTR} && UNIVERSAL::isa($this,'HASH') ) {
     foreach my $Key ( keys %{$CLASS_HPLOO{ATTR}} ) {
-    tie( $this->{$Key} => 'Class::HPLOO::TIESCALAR' , $CLASS_HPLOO{ATTR}{$Key}{tp} , $CLASS_HPLOO{ATTR}{$Key}{pr} , \$this->{CLASS_HPLOO_ATTR}{$Key} ) if !exists $this->{$Key} ;
+    tie( $this->{$Key} => 'Class::HPLOO::TIESCALAR' , $this , $CLASS_HPLOO{ATTR}{$Key}{tp} , $CLASS_HPLOO{ATTR}{$Key}{pr} , \$this->{CLASS_HPLOO_ATTR}{$Key} ) if !exists $this->{$Key} ;
     } } } elsif ( $ret_this == $undef ) {
     $this = undef ;
     }  return $this ;
@@ -67,16 +70,24 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     $type =~ s/(?:^|\s*)int$/integer/gs ;
     $type =~ s/(?:^|\s*)float$/floating/gs ;
     $type =~ s/(?:^|\s*)str$/string/gs ;
+    $type =~ s/(?:^|\s*)sub$/sub_$name/gs ;
     $type =~ s/\s//gs ;
-    $type = 'any' if $type !~ /^(?:(?:ref)|(?:ref)?(?:array|hash)(?:integer|floating|string|any|&\w+)|(?:ref)?(?:array|hash)|(?:array|hash)?(?:integer|floating|string|any|&\w+))$/ ;
+    $type = 'any' if $type !~ /^(?:(?:ref)|(?:ref)?(?:array|hash)(?:integer|floating|string|sub_\w+|any|&\w+)|(?:ref)?(?:array|hash)|(?:array|hash)?(?:integer|floating|string|sub_\w+|any|&\w+))$/ ;
     my $parse_ref = $type =~ /^(?:array|hash)/ ? 1 : 0 ;
     $CLASS_HPLOO{ATTR}{$name}{tp} = $type ;
     $CLASS_HPLOO{ATTR}{$name}{pr} = $parse_ref ;
-    my $return = $parse_ref ? qq~ ref(\$this->{CLASS_HPLOO_ATTR}{$name}) eq 'ARRAY' ? \@{\$this->{CLASS_HPLOO_ATTR}{$name}} : ref(\$this->{CLASS_HPLOO_ATTR}{$name}) eq 'HASH' ? \%{\$this->{CLASS_HPLOO_ATTR}{$name}} : \$this->{CLASS_HPLOO_ATTR}{$name} ~ : "\$this->{CLASS_HPLOO_ATTR}{$name}" ;
-    eval(qq~ sub set_$name {
+    my $return ;
+    if ( $type =~ /^sub_(\w+)$/ ) {
+    my $sub = $1 ;
+    $return = qq~ return (&$sub(\$this,\@_))[0] if defined &$sub ;
+    return undef ;
+    ~ ;
+    } else {
+    $return = $parse_ref ? qq~ ref(\$this->{CLASS_HPLOO_ATTR}{$name}) eq 'ARRAY' ? \@{\$this->{CLASS_HPLOO_ATTR}{$name}} : ref(\$this->{CLASS_HPLOO_ATTR}{$name}) eq 'HASH' ? \%{\$this->{CLASS_HPLOO_ATTR}{$name}} : \$this->{CLASS_HPLOO_ATTR}{$name} ~ : "\$this->{CLASS_HPLOO_ATTR}{$name}" ;
+    }  eval(qq~ sub set_$name {
     my \$this = shift ;
     if ( !defined \$this->{$name} ) {
-    tie( \$this->{$name} => 'Class::HPLOO::TIESCALAR' , '$type' , $parse_ref , \\\$this->{CLASS_HPLOO_ATTR}{$name} ) ;
+    tie( \$this->{$name} => 'Class::HPLOO::TIESCALAR' , \$this , '$type' , $parse_ref , \\\$this->{CLASS_HPLOO_ATTR}{$name} ) ;
     } \$this->{CLASS_HPLOO_ATTR}{$name} = CLASS_HPLOO_ATTR_TYPE('$type',\@_) ;
     } ~) if !defined &{"set_$name"} ;
     eval(qq~ sub get_$name {
@@ -86,8 +97,21 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     } }  { package Class::HPLOO::TIESCALAR ;
     sub TIESCALAR {
     shift ;
-    return bless( {
+    my $obj = shift ;
+    my $this = bless( {
     tp => $_[0] , pr => $_[1] , rf => $_[2] , pk => scalar caller } , __PACKAGE__ ) ;
+    if ( $this->{tp} =~ /^sub_(\w+)$/ ) {
+    if ( !ref($CLASS_HPLOO{OBJ_TBL}) ) {
+    eval {
+    require Hash::NoRef } ;
+    if ( !$@ ) {
+    $CLASS_HPLOO{OBJ_TBL} = {} ;
+    tie( %{$CLASS_HPLOO{OBJ_TBL}} , 'Hash::NoRef') ;
+    } else {
+    $@ = undef ;
+    } }  $CLASS_HPLOO{OBJ_TBL}{ ++$CLASS_HPLOO{OBJ_TBL}{x} } = $obj ;
+    $this->{oid} = $CLASS_HPLOO{OBJ_TBL}{x} ;
+    }  return $this ;
     }  sub STORE {
     my $this = shift ;
     my $ref = $this->{rf} ;
@@ -95,10 +119,16 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     }  sub FETCH {
     my $this = shift ;
     my $ref = $this->{rf} ;
+    if ( $this->{tp} =~ /^sub_(\w+)$/ ) {
+    my $sub = $this->{pk} . '::' . $1 ;
+    my $obj = $CLASS_HPLOO{OBJ_TBL}{ $this->{oid} } ;
+    return (&$sub($obj,@_))[0] if defined &$sub ;
+    } else {
     if ( $this->{pr} ) {
     return ref($$ref) eq 'ARRAY' ? @{$$ref} : ref($$ref) eq 'HASH' ? %{$$ref} : $$ref } else {
     return $$ref ;
-    } }  sub UNTIE {} sub DESTROY {} }  sub CLASS_HPLOO_ATTR_TYPE {
+    } } return undef ;
+    }  sub UNTIE {} sub DESTROY {} }  sub CLASS_HPLOO_ATTR_TYPE {
     my $type = shift ;
     if ($type eq 'any') {
     return $_[0] ;
@@ -117,6 +147,9 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     ($val) = ( $val =~ /(\d+)/ ) ;
     $val .= '.0' ;
     } return $val ;
+    } elsif ($type =~ /^sub_(\w+)$/) {
+    my $sub = $1 ;
+    return (&$sub(@_))[0] if defined &$sub ;
     } elsif ($type =~ /^&(\w+)$/) {
     my $sub = $1 ;
     return (&$sub(@_))[0] if defined &$sub ;
@@ -170,7 +203,13 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   sub _OVER_string { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->date ;}
   sub _OVER_number { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->time ;}
 
-  CLASS_HPLOO_ATTR(' int time , int sec , int min , int hour , int day , int month , int year , int wday , int yday , int isdst , int zone') ;
+  CLASS_HPLOO_ATTR('
+        int time , int sec , int min , int hour , int day , int month , int year , int wday , int yday , int isdst , int zone ,
+        sub zone_gmt ,
+        sub s , sub m , sub h , sub d , sub mo , sub y , sub z ,
+        sub serial ,
+        sub date , sub date_zone ,
+        sub hms , sub ymd , sub mdy , sub dmy ') ;
   
   my @MONTHS_DAYS = ('',31,28,31,30,31,30,31,31,30,31,30,31) ;
 
@@ -190,6 +229,9 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
         $time = $_[0]->time ;
         $zone = $_[0]->zone if $zone eq '' ;
       }
+      elsif ( length($_[0]) >= 14 ) {
+        return new_serial('Date::Object',$_[0]) ;
+      }
       elsif ( $_[0] >= 0 ) { $time = $_[0] ;}
       else { $time = 0 ;}
     }
@@ -197,7 +239,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
       if ($zone eq '') { $zone = $#_ >= 6 ? $_[6] : 0 ;}
       $time = $this->timelocal(@_[0..5] , $zone) ;
     }
-    
+
     return UNDEF if $time == undef ;
     
     $this->{time} = $time ;
@@ -233,12 +275,14 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub new_serial { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
-    my $serial = shift(@_) ;
     
     my $class = shift ;
+    my $serial = shift ;
+    
     my ($time , $zone) = ( $serial =~ /^(\d+)(\d{4})$/ );
     
     if ( $zone > 1200 ) { $zone -= 1200 ;}
+    elsif ( $zone == 1200 ) { $zone = 0 ;}
     else { $zone *= -1 ;}
     
     $zone =~ s/(\d\d)$/\.$1/ ;
@@ -255,7 +299,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     my $clone = Date::Object->new_zone($this->zone , $this) ;
     return $clone ;
   }
-  
+    
   sub set_gmt { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
     my $time = shift(@_) ;
@@ -368,6 +412,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     if    ( $z =~ /^-(\d+)/ ) { $z = $1 ;}
     elsif ( $z =~ /^[\+]?(\d+)/ ) { $z = $1 + 1200 ;}
     my $serial = $this->time . $z ;
+    while( length($serial) < 14 ) { $serial = "0$serial" ;}
     return $serial ;
   }
   
@@ -531,7 +576,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     if (!$year || $year eq '*' || $year < $year_0) { $year = $now_year ;}
   
     my $year_bisexto = 0 ;
-    if ( ($year / 4) !~ /\./) { $year_bisexto = 1 ;}
+    if ( $this->is_leap_year($year) ) { $year_bisexto = 1 ;}
 
     if (!$mon || $mon eq '*') { $mon = $now_mon }
     elsif ($mon < 1 || $mon > 12 ) { return }
@@ -565,7 +610,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
         
     for my $y ($year_0..($year-1)) {
       $timelocal += $time_year ;
-      if ( ($y / 4) !~ /\./) { $timelocal += $time_day ;}
+      if ( $this->is_leap_year($y) ) { $timelocal += $time_day ;}
     }
     
     for my $m (1..($mon-1)) {
@@ -605,7 +650,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
       
       my @months_days = @MONTHS_DAYS ;
       
-      if ( ($year / 4) !~ /\./) { $months_days[2] = 29 ;}
+      if ( $this->is_leap_year($year) ) { $months_days[2] = 29 ;}
       
       if ($day <= $months_days[$month]) { return 1 ;}
       else { return ;}
@@ -616,6 +661,36 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     }
     
     return undef ;
+  }
+  
+  # The Egyptians called it 365 and left it at that. But their calendar got out of step with the seasons, so that 
+  # after around 750 years of this they were celebrating The Fourth of July in the middle of the winter.
+  # 
+  # The Romans wised up and added the leap day every four years to get the 365.25 day Julian year. Much better, 
+  # but notice that this time the year is longer than it ought to be. The small difference between this and the 
+  # true length of the year caused the seasons to creep through the calendar once again, only slower and in the 
+  # other direction. After about 23000 years of this, July Fourth would once again fall in mid-winter.
+  # 
+  # Fortunately things never reached that sad state. By 1582 the calendar was about ten days out of whack, so 
+  # Pope Gregory XIII included the correction that's still in use today. 
+  # 
+  # "If the year is divisible by 100, it's not a leap year UNLESS it is also divisible by 400."
+  # 
+  # More recently, proposals for fixes have gotten even better than that. One suggested change is to add on "if 
+  # the year is also divisible by 4000, it's not a leap year."
+  
+  sub is_leap_year { 
+    my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $year = shift(@_) ;
+    
+    $year = $this->{year} if $year eq '' ;
+
+    if    ($year == 0) { return 1 ;}
+    elsif (($year % 4000) == 0) { return 0 ;}
+    elsif (($year % 400) == 0) { return 1 ;}
+    elsif (($year % 100) == 0) { return 0 ;}
+    elsif (($year % 4) == 0) { return 1 ;}
+    return 0 ;
   }
   
   sub secs_from { 
@@ -765,7 +840,7 @@ of a date, including I<year, month, day, hour, minute, second and timezone>. Oth
 thing is that any DB supports INTEGER fields, what doesn't make our Perl code dependent
 of the SQL nuances of each different way to handle dates of each DB.
 
-See the method I<serail()> for DB usage.
+See the method I<serial()> for DB usage.
 
 =head1 USAGE
 
@@ -1164,7 +1239,7 @@ See I<days_until()>.
 
 =head2 yday
 
-The year day of the date, in the range of 0..364 (or 0..365).
+The year day of the date, in the range of 1..365 (or 1..366).
 
 =head2 year
 
@@ -1259,6 +1334,70 @@ $date->sec
 =head2 z
 
 $date->zone
+
+=head1 Key Access
+
+You also can access the date attributes using the object/hash keys:
+
+Day:
+
+  $date->{d}
+  $date->{day}
+
+Hour:
+
+  $date->{h}
+  $date->{hour}
+
+Minutes:
+
+  $date->{m}
+  $date->{min}
+
+Seconds:
+
+  $date->{s}
+  $date->{sec}
+
+Month:
+
+  $date->{mo}
+  $date->{month}
+
+Year:
+
+  $date->{y}
+  $date->{year}
+
+Week day:
+
+  $date->{wday}
+
+
+Year day:
+
+  $date->{yday}
+
+Daylight savings
+
+  $date->{isdst}
+
+This keys are the same of a method call:
+
+  $date->{date}
+  $date->{date_zone}
+
+  $date->{ymd}
+  $date->{dmy}
+  $date->{mdy}
+  $date->{hms}
+
+  $date->{serial}
+  $date->{time}
+
+  $date->{z}
+  $date->{zone}
+  $date->{zone_gmt}
 
 =head1 SEE ALSO
 

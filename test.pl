@@ -3,7 +3,7 @@
 ###use Data::Dumper ; print Dumper(  ) ;
 
 use Test;
-BEGIN { plan tests => 1 } ;
+BEGIN { plan tests => 35 } ;
 
 use Date::Object ;
 
@@ -46,6 +46,29 @@ sub synchronize {
   ok( $d02->zone == 0 ) ;
   ok( $d12->zone == -3 ) ;
   
+}
+#########################
+{
+
+  my $max_int = 2147483647 ;
+
+  my $err ;
+
+  for (my $i = 1 ; $i <= $max_int ; $i += 60*60*24*30 ) {
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime($i);
+    ++$mon ;
+    $year += 1900 ;
+    
+    my $d = Date::O_gmt( $year , $mon , $mday , $hour , $min , $sec ) ;
+    
+    if ( $i != $d->time ) {
+      warn("Leap seconds error: $d != $i") ;
+      $err = 1 ;
+    }
+  }
+  
+  ok(!$err) ;
+
 }
 #########################
 {
@@ -131,6 +154,32 @@ sub synchronize {
   $d0->add_year(1) ;
   
   ok($d0->date , "2004-02-28 00:00:00") ;
+  
+}
+#########################
+{
+
+  synchronize() ;
+  my $d0 = Date::O(2004 , 2 , 29) ;
+  
+  ok($d0->{date} , "2004-02-29 00:00:00") ;
+  ok($d0->{serial} , "10780128001200") ;
+  
+}
+#########################
+{
+
+  my $date = Date::O_gmt( 2004 , 5 , 19 , 21 , 30 ) ;
+  
+  my $serial = $date->serial ;
+  
+  ok($serial , 10850022001200) ;
+  
+  my $date2 = Date::O($serial) ;
+  
+  ok( $date2->date_zone , '2004-05-19 21:30:00 +0000') ;  
+  
+  ok($serial , $date2->serial) ;
   
 }
 #########################
