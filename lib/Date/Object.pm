@@ -1,8 +1,8 @@
 #############################################################################
-## This file was generated automatically by Class::HPLOO/0.14
+## This file was generated automatically by Class::HPLOO/0.16
 ##
 ## Original file:    ./lib/Date/Object.hploo
-## Generation date:  2004-08-20 04:38:50
+## Generation date:  2004-10-16 19:20:37
 ##
 ## ** Do not change this file, use the original HPLOO source! **
 #############################################################################
@@ -32,34 +32,49 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   use strict qw(vars) ; no warnings ;
 
   use vars qw($VERSION) ;
-  $VERSION = '0.03' ;
+  $VERSION = '0.04' ;
 
   use vars qw(@ISA) ; @ISA = qw(UNIVERSAL) ;
 
   my (%CLASS_HPLOO) ;
+
+  my $CLASS = 'Date::Object' ; sub __CLASS__ { 'Date::Object' } ;
  
   sub new { 
-    my $class = shift ;
+    if ( !defined &Object && @ISA > 1 ) {
+    foreach my $ISA_i ( @ISA ) {
+    return &{"$ISA_i\::new"}(@_) if defined &{"$ISA_i\::new"} ;
+    } }  my $class = shift ;
     my $this = bless({} , $class) ;
     no warnings ;
     my $undef = \'' ;
     sub UNDEF {$undef} ;
     if ( $CLASS_HPLOO{ATTR} ) {
-    foreach my $Key ( keys %{$CLASS_HPLOO{ATTR}} ) {
-    tie( $this->{$Key} => 'Class::HPLOO::TIESCALAR' , $this , $CLASS_HPLOO{ATTR}{$Key}{tp} , $CLASS_HPLOO{ATTR}{$Key}{pr} , \$this->{CLASS_HPLOO_ATTR}{$Key} ) if !exists $this->{$Key} ;
-    } }  my $ret_this = defined &Object ? $this->Object(@_) : undef ;
+    CLASS_HPLOO_TIE_KEYS($this) }  my $ret_this = defined &Object ? $this->Object(@_) : undef ;
     if ( ref($ret_this) && UNIVERSAL::isa($ret_this,$class) ) {
     $this = $ret_this ;
     if ( $CLASS_HPLOO{ATTR} && UNIVERSAL::isa($this,'HASH') ) {
+    CLASS_HPLOO_TIE_KEYS($this) } } elsif ( $ret_this == $undef ) {
+    $this = undef }  return $this ;
+    }  sub CLASS_HPLOO_TIE_KEYS {
+    my $this = shift ;
+    if ( $CLASS_HPLOO{ATTR} ) {
     foreach my $Key ( keys %{$CLASS_HPLOO{ATTR}} ) {
-    tie( $this->{$Key} => 'Class::HPLOO::TIESCALAR' , $this , $CLASS_HPLOO{ATTR}{$Key}{tp} , $CLASS_HPLOO{ATTR}{$Key}{pr} , \$this->{CLASS_HPLOO_ATTR}{$Key} ) if !exists $this->{$Key} ;
-    } } } elsif ( $ret_this == $undef ) {
-    $this = undef ;
-    }  return $this ;
+    tie( $this->{$Key} => 'Date::Object::HPLOO_TIESCALAR' , $this , $Key , $CLASS_HPLOO{ATTR}{$Key}{tp} , $CLASS_HPLOO{ATTR}{$Key}{pr} , \$this->{CLASS_HPLOO_ATTR}{$Key} , \$this->{CLASS_HPLOO_CHANGED} , Date::Object ) if !exists $this->{$Key} ;
+    } } }   sub SUPER {
+    my ($pack , undef , undef , $sub0) = caller(1) ;
+    unshift(@_ , $pack) if ( (!ref($_[0]) && $_[0] ne $pack) || (ref($_[0]) && !UNIVERSAL::isa($_[0] , $pack)) ) ;
+    my $sub = $sub0 ;
+    $sub =~ s/.*?(\w+)$/$1/ ;
+    $sub = 'new' if $sub0 =~ /(?:^|::)$sub::$sub$/ ;
+    $sub = "SUPER::$sub" ;
+    $_[0]->$sub(@_[1..$#_]) ;
   }
 
- 
-  sub CLASS_HPLOO_ATTR { 
+  
+  sub GET_CLASS_HPLOO_HASH { 
+    return \%CLASS_HPLOO } ;
+    sub CLASS_HPLOO_ATTR {
     my @attrs = split(/\s*,\s*/ , $_[0]) ;
     foreach my $attrs_i ( @attrs ) {
     $attrs_i =~ s/^\s+//s ;
@@ -74,6 +89,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     $type =~ s/\s//gs ;
     $type = 'any' if $type !~ /^(?:(?:ref)|(?:ref)?(?:array|hash)(?:integer|floating|string|sub_\w+|any|&\w+)|(?:ref)?(?:array|hash)|(?:array|hash)?(?:integer|floating|string|sub_\w+|any|&\w+))$/ ;
     my $parse_ref = $type =~ /^(?:array|hash)/ ? 1 : 0 ;
+    push(@{ $CLASS_HPLOO{ATTR_ORDER} } , $name) if !$CLASS_HPLOO{ATTR}{$name} ;
     $CLASS_HPLOO{ATTR}{$name}{tp} = $type ;
     $CLASS_HPLOO{ATTR}{$name}{pr} = $parse_ref ;
     my $return ;
@@ -87,19 +103,20 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     }  eval(qq~ sub set_$name {
     my \$this = shift ;
     if ( !defined \$this->{$name} ) {
-    tie( \$this->{$name} => 'Class::HPLOO::TIESCALAR' , \$this , '$type' , $parse_ref , \\\$this->{CLASS_HPLOO_ATTR}{$name} ) ;
-    } \$this->{CLASS_HPLOO_ATTR}{$name} = CLASS_HPLOO_ATTR_TYPE('$type',\@_) ;
+    tie( \$this->{$name} => 'Date::Object::HPLOO_TIESCALAR' , \$this , '$name' , '$type' , $parse_ref , \\\$this->{CLASS_HPLOO_ATTR}{$name} , \\\$this->{CLASS_HPLOO_CHANGED} , Date::Object ) ;
+    }  \$this->{CLASS_HPLOO_CHANGED}{$name} = 1 ;
+    \$this->{CLASS_HPLOO_ATTR}{$name} = CLASS_HPLOO_ATTR_TYPE('$type',\@_) ;
     } ~) if !defined &{"set_$name"} ;
     eval(qq~ sub get_$name {
     my \$this = shift ;
     $return ;
     } ~) if !defined &{"get_$name"} ;
-    } }  { package Class::HPLOO::TIESCALAR ;
+    } }  { package Date::Object::HPLOO_TIESCALAR ;
     sub TIESCALAR {
     shift ;
     my $obj = shift ;
     my $this = bless( {
-    tp => $_[0] , pr => $_[1] , rf => $_[2] , pk => scalar caller } , __PACKAGE__ ) ;
+    nm => $_[0] , tp => $_[1] , pr => $_[2] , rf => $_[3] , rfcg => $_[4] , pk => ($_[5] || scalar caller) } , __PACKAGE__ ) ;
     if ( $this->{tp} =~ /^sub_(\w+)$/ ) {
     if ( !ref($CLASS_HPLOO{OBJ_TBL}) ) {
     eval {
@@ -108,14 +125,17 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     $CLASS_HPLOO{OBJ_TBL} = {} ;
     tie( %{$CLASS_HPLOO{OBJ_TBL}} , 'Hash::NoRef') ;
     } else {
-    $@ = undef ;
-    } }  $CLASS_HPLOO{OBJ_TBL}{ ++$CLASS_HPLOO{OBJ_TBL}{x} } = $obj ;
+    $@ = undef } }  $CLASS_HPLOO{OBJ_TBL}{ ++$CLASS_HPLOO{OBJ_TBL}{x} } = $obj ;
     $this->{oid} = $CLASS_HPLOO{OBJ_TBL}{x} ;
     }  return $this ;
     }  sub STORE {
     my $this = shift ;
     my $ref = $this->{rf} ;
-    $$ref = &{"$this->{pk}::CLASS_HPLOO_ATTR_TYPE"}( $this->{tp} , @_) ;
+    my $ref_changed = $this->{rfcg} ;
+    if ( $ref_changed ) {
+    if ( ref $$ref_changed ne 'HASH' ) {
+    $$ref_changed = {} } $$ref_changed->{$this->{nm}} = 1 ;
+    }  $$ref = &{"$this->{pk}::CLASS_HPLOO_ATTR_TYPE"}( $this->{tp} , @_) ;
     }  sub FETCH {
     my $this = shift ;
     my $ref = $this->{rf} ;
@@ -126,13 +146,11 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     } else {
     if ( $this->{pr} ) {
     return ref($$ref) eq 'ARRAY' ? @{$$ref} : ref($$ref) eq 'HASH' ? %{$$ref} : $$ref } else {
-    return $$ref ;
-    } } return undef ;
+    return $$ref } } return undef ;
     }  sub UNTIE {} sub DESTROY {} }  sub CLASS_HPLOO_ATTR_TYPE {
     my $type = shift ;
     if ($type eq 'any') {
-    return $_[0] ;
-    } elsif ($type eq 'string') {
+    return $_[0] } elsif ($type eq 'string') {
     return "$_[0]" ;
     } elsif ($type eq 'integer') {
     my $val = $_[0] ;
@@ -191,7 +209,6 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     } return undef ;
   }
 
-
   no warnings ;
 
   use overload (
@@ -200,8 +217,8 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   'fallback' => 1 ,
   ) ;
   
-  sub _OVER_string { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->date ;}
-  sub _OVER_number { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->time ;}
+  sub _OVER_string { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->date ;}
+  sub _OVER_number { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->time ;}
 
   CLASS_HPLOO_ATTR('
         int time , int sec , int min , int hour , int day , int month , int year , int wday , int yday , int isdst , int zone ,
@@ -215,6 +232,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
 
   sub Object { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my ( $year , $month , $day , $hour , $min , $sec , $zone , $time ) ;
     
@@ -239,11 +257,14 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
         if ( $_[1] =~ /mdy/i ) {
           ( $m , $d , $y , $h , $min , $s ) = @match ;
         }
+        elsif ( $_[1] =~ /dmy/i ) {
+          ( $d , $m , $y , $h , $min , $s ) = @match ;
+        }
         elsif ( $_[1] =~ /ymd/i ) {
           ( $y , $m , $d , $h , $min , $s ) = @match ;
         }
         else {
-          ( $d , $m , $y , $h , $min , $s ) = @match ;
+          ( $y , $m , $d , $h , $min , $s ) = @match ;
         }
       
         $time = $this->timelocal($y , $m , $d , $h , $min , $s , 0 ) ;
@@ -266,6 +287,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub new_gmt { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $class = shift ;
     new($class , [0,@_]) ;
@@ -273,6 +295,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub new_local { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $class = shift ;
     my $zone = _calc_timezone() ;
@@ -282,6 +305,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub new_zone { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $class = shift ;
     my $zone = shift ;
@@ -291,6 +315,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub new_serial { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $class = shift ;
     my $serial = shift ;
@@ -311,6 +336,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
 
   sub clone { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $clone = Date::Object->new_zone($this->zone , $this) ;
     return $clone ;
@@ -318,6 +344,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     
   sub set_gmt { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     my $time = shift(@_) ;
     
     ($this->{sec} , $this->{min} , $this->{hour} , $this->{day} , $this->{month} , $this->{year} , $this->{wday} , $this->{yday} , $this->{isdst} ) = $this->gmtime($time) ;
@@ -326,6 +353,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub set_local { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     my $time = shift(@_) ;
     my $local_zone = shift(@_) ;
     
@@ -335,6 +363,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub set_zone { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     my $zone = shift(@_) ;
     my $time = shift(@_) ;
     
@@ -358,8 +387,27 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     }
   }
   
+  sub set_serial { 
+    my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
+    my $serial = shift(@_) ;
+    
+    my ($time , $zone) = ( $serial =~ /^(\d+)(\d{4})$/ );
+    
+    if ( $zone > 1200 ) { $zone -= 1200 ;}
+    elsif ( $zone == 1200 ) { $zone = 0 ;}
+    else { $zone *= -1 ;}
+    
+    $zone =~ s/(\d\d)$/\.$1/ ;
+    $zone =~ s/\.00$// ;
+    $zone *= 1 ;
+    
+    $this->set_zone($zone , $time) ;
+  }
+  
   sub _format_zone { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     my $zone = shift(@_) ;
     
     $zone ||= 0 ;
@@ -371,6 +419,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub _calc_timezone { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $d0 = Date::Object->new(time) ;
     
@@ -385,10 +434,11 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     return $zone ;
   }
   
-  sub zone { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->{zone} ;}
+  sub zone { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->{zone} ;}
   
   sub zone_gmt { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my ($sign,$h,$m) = ( $this->{zone} =~ /^([\+\-]?)(\d{1,2})\d*(?:\.(\d{1,2})\d*)?$/ );
     
@@ -401,28 +451,29 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
     return $z ;
   }
   
-  sub time { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->{time} ;}
+  sub time { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->{time} ;}
   
-  sub sec { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->{sec} ;}
-  sub min { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->{min} ;}
-  sub hour { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->{hour} ;}
-  sub day { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->{day} ;}
-  sub month { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->{month} ;}
-  sub year { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->{year} ;}
-  sub wday { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->{wday} ;}
-  sub yday { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->{yday} ;}
-  sub isdst { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->{isdst} ;}
+  sub sec { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->{sec} ;}
+  sub min { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->{min} ;}
+  sub hour { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->{hour} ;}
+  sub day { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->{day} ;}
+  sub month { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->{month} ;}
+  sub year { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->{year} ;}
+  sub wday { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->{wday} ;}
+  sub yday { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->{yday} ;}
+  sub isdst { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->{isdst} ;}
   
-  sub s { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->{sec} ;}
-  sub m { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->{min} ;}
-  sub h { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->{hour} ;}
-  sub d { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->{day} ;}
-  sub mo { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->{month} ;}
-  sub y { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->{year} ;}
-  sub z { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->{zone} ;}
+  sub s { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->{sec} ;}
+  sub m { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->{min} ;}
+  sub h { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->{hour} ;}
+  sub d { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->{day} ;}
+  sub mo { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->{month} ;}
+  sub y { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->{year} ;}
+  sub z { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->{zone} ;}
   
   sub serial { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $z = $this->zone_gmt ;
     if    ( $z =~ /^-(\d+)/ ) { $z = $1 ;}
@@ -434,6 +485,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub add_sec { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     my $secs = shift(@_) ;
     
     $secs ||= 1 ;
@@ -443,6 +495,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub add_min { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     my $mins = shift(@_) ;
     
     $mins ||= 1 ;
@@ -452,6 +505,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub add_hour { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     my $hours = shift(@_) ;
     
     $hours ||= 1 ;
@@ -461,6 +515,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub add_day { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     my $days = shift(@_) ;
     
     $days ||= 1 ;
@@ -470,6 +525,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub add_week { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     my $weeks = shift(@_) ;
     
     $weeks ||= 1 ;
@@ -478,6 +534,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub add_month { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     my $months = shift(@_) ;
     
     $months ||= 1 ;
@@ -498,6 +555,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub sub_month { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     my $months = shift(@_) ;
     
     $months ||= 1 ;
@@ -518,21 +576,23 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub add_year { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     my $years = shift(@_) ;
     
     $years ||= 1 ;
     $this->add_month(12*$years) ;
   }
   
-  sub sub_sec { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $n = shift(@_) ; $this->add_sec(  $n*-1 ) ;}
-  sub sub_min { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $n = shift(@_) ; $this->add_min(  $n*-1 ) ;}
-  sub sub_hour { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $n = shift(@_) ; $this->add_hour( $n*-1 ) ;}
-  sub sub_day { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $n = shift(@_) ; $this->add_day(  $n*-1 ) ;}
-  sub sub_week { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $n = shift(@_) ; $this->add_week( $n*-1 ) ;}
-  sub sub_year { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $n = shift(@_) ; $this->add_year( $n*-1 ) ;}
+  sub sub_sec { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ;my $n = shift(@_) ; $this->add_sec(  $n*-1 ) ;}
+  sub sub_min { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ;my $n = shift(@_) ; $this->add_min(  $n*-1 ) ;}
+  sub sub_hour { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ;my $n = shift(@_) ; $this->add_hour( $n*-1 ) ;}
+  sub sub_day { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ;my $n = shift(@_) ; $this->add_day(  $n*-1 ) ;}
+  sub sub_week { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ;my $n = shift(@_) ; $this->add_week( $n*-1 ) ;}
+  sub sub_year { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ;my $n = shift(@_) ; $this->add_year( $n*-1 ) ;}
   
   sub gmtime { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     my $time = shift(@_) ;
     
     $time ||= $this->{time} || time ;
@@ -541,6 +601,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub localtime { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     my $time = shift(@_) ;
     
     $time ||= $this->{time} || time ;
@@ -549,6 +610,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub _fix_vars_time { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     my $sec = shift(@_) ;
     my $min = shift(@_) ;
     my $hour = shift(@_) ;
@@ -574,6 +636,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub timelocal { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     my $year = shift(@_) ;
     my $mon = shift(@_) ;
     my $day = shift(@_) ;
@@ -650,6 +713,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub check { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     shift if $_[0] !~ /^\d+$/ ;
 
@@ -697,6 +761,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub is_leap_year { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     my $year = shift(@_) ;
     
     $year = $this->{year} if $year eq '' ;
@@ -711,6 +776,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub secs_from { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $time_0 = $this->time ;
     my $time_1 = Date::Object->new(@_)->time ;
@@ -721,6 +787,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub min_from { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $delay = $this->secs_from(@_) ;
     my $min = int($delay / (60)) ;
@@ -729,6 +796,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub hours_from { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $delay = $this->secs_from(@_) ;
     my $hours = int($delay / (60*60)) ;
@@ -737,6 +805,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub days_from { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $delay = $this->secs_from(@_) ;
     my $days = int($delay / (60*60*24)) ;
@@ -745,6 +814,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub weeks_from { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $days = $this->days_from(@_) ;
     my $weeks = int($days / 7) ;
@@ -753,6 +823,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub months_from { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $days = $this->days_from(@_) ;
     my $months = int($days / 30) ;
@@ -761,30 +832,32 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub years_from { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $days = $this->days_from(@_) ;
     my $years = int($days / 365) ;
     return $years ;
   }
   
-  sub secs_until { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->secs_from(@_) * -1 ;}
-  sub min_until { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->min_from(@_) * -1 ;}
-  sub hours_until { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->hours_from(@_) * -1 ;}
-  sub days_until { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->days_from(@_) * -1 ;}
-  sub weeks_until { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->weeks_from(@_) * -1 ;}
-  sub months_until { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->months_from(@_) * -1 ;}
-  sub years_until { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->years_from(@_) * -1 ;}
+  sub secs_until { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->secs_from(@_) * -1 ;}
+  sub min_until { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->min_from(@_) * -1 ;}
+  sub hours_until { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->hours_from(@_) * -1 ;}
+  sub days_until { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->days_from(@_) * -1 ;}
+  sub weeks_until { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->weeks_from(@_) * -1 ;}
+  sub months_until { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->months_from(@_) * -1 ;}
+  sub years_until { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->years_from(@_) * -1 ;}
   
-  sub secs_between { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; my $r = $this->secs_from(@_) ; $r < 0 ? ($r*-1) : $r ;}
-  sub min_between { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; my $r = $this->min_from(@_) ; $r < 0 ? ($r*-1) : $r ;}
-  sub hours_between { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; my $r = $this->hours_from(@_) ; $r < 0 ? ($r*-1) : $r ;}
-  sub days_between { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; my $r = $this->days_from(@_) ; $r < 0 ? ($r*-1) : $r ;}
-  sub weeks_between { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; my $r = $this->weeks_from(@_) ; $r < 0 ? ($r*-1) : $r ;}
-  sub months_between { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; my $r = $this->months_from(@_) ; $r < 0 ? ($r*-1) : $r ;}
-  sub years_between { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; my $r = $this->years_from(@_) ; $r < 0 ? ($r*-1) : $r ;}
+  sub secs_between { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; my $r = $this->secs_from(@_) ; $r < 0 ? ($r*-1) : $r ;}
+  sub min_between { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; my $r = $this->min_from(@_) ; $r < 0 ? ($r*-1) : $r ;}
+  sub hours_between { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; my $r = $this->hours_from(@_) ; $r < 0 ? ($r*-1) : $r ;}
+  sub days_between { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; my $r = $this->days_from(@_) ; $r < 0 ? ($r*-1) : $r ;}
+  sub weeks_between { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; my $r = $this->weeks_from(@_) ; $r < 0 ? ($r*-1) : $r ;}
+  sub months_between { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; my $r = $this->months_from(@_) ; $r < 0 ? ($r*-1) : $r ;}
+  sub years_between { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; my $r = $this->years_from(@_) ; $r < 0 ? ($r*-1) : $r ;}
   
   sub date { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $date = "$this->{year}-$this->{month}-$this->{day} $this->{hour}:$this->{min}:$this->{sec}" ;
     return $date ;
@@ -792,6 +865,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub date_zone { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $z = $this->zone_gmt ;
     my $date = "$this->{year}-$this->{month}-$this->{day} $this->{hour}:$this->{min}:$this->{sec} $z" ;
@@ -800,15 +874,17 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub hour { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $date = "$this->{hour}:$this->{min}:$this->{sec}" ;
     return $date ;
   }
   
-  sub hms { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ; $this->hour }
+  sub hms { my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;my $CLASS = ref($this) || __PACKAGE__ ; $this->hour }
   
   sub ymd { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $date = "$this->{year}-$this->{month}-$this->{day}" ;
     return $date ;
@@ -816,6 +892,7 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub mdy { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $date = "$this->{month}-$this->{day}-$this->{year}" ;
     return $date ;
@@ -823,9 +900,28 @@ sub Date::timelocal  { Date::Object::timelocal(@_) ;}
   
   sub dmy { 
     my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
     
     my $date = "$this->{day}-$this->{month}-$this->{year}" ;
     return $date ;
+  }
+  
+  sub STORABLE_freeze { 
+    my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
+    my $cloning = shift(@_) ;
+    
+    return $this->serial ;
+  }
+  
+  sub STORABLE_thaw { 
+    my $this = ref($_[0]) && UNIVERSAL::isa($_[0],'UNIVERSAL') ? shift : undef ;
+    my $CLASS = ref($this) || __PACKAGE__ ;
+    my $cloning = shift(@_) ;
+    my $serial = shift(@_) ;
+    
+    $this->set_serial($serial) ;
+    return ;
   }
 
 
@@ -923,13 +1019,14 @@ To create a I<Date::Object> you can use different types of arguments:
 
   Date::Object->new( 2004 , 12 , 25 , 15 , 30 , 59 ) ;
 
-=item DD/MM/YY HH:MM:SS formats:
+=item YYYY/MM/DD HH:MM:SS formats:
 
-  Date::Object->new( "25/12/2004 15:30:59" ) ;
+  Date::Object->new( "2004/12/25 15:30:59" ) ;
+  Date::Object->new( "2004/12/25 15:30:59" , 'ymd' ) ;
+  
   Date::Object->new( "25/12/2004 15:30:59" , 'dmy' ) ;
   
   Date::Object->new( "12/25/2004 15:30:59" , 'mdy' ) ;
-  Date::Object->new( "2004/12/25 15:30:59" , 'ymd' ) ;
 
 =item Date::Object
 

@@ -192,6 +192,40 @@ sub synchronize {
 
 }
 #########################
+{
+
+  my $date1 = Date::O_gmt( 2004 , 5 , 19 , 21 , 30 ) ;
+  my $date2 = Date::O_gmt( 2005 , 5 , 19 , 21 , 30 ) ;
+  
+  ok($date1 , '2004-05-19 21:30:00') ;
+  ok($date2 , '2005-05-19 21:30:00') ;
+  
+  $date2->set_serial( $date1->serial ) ;
+  
+  ok($date1 , $date2) ;
+
+}
+#########################
+{
+
+  eval(q`use Storable qw(thaw freeze) ;`) ;
+  
+  if ( !$@ ) {
+  
+    my $date1 = Date::O_gmt( 2004 , 5 , 19 , 21 , 30 ) ;
+    
+    my $freeze = freeze($date1) ;
+  
+    my $date2 = thaw($freeze) ;
+    
+    ok($date1 , '2004-05-19 21:30:00') ;
+    ok($date2 , '2004-05-19 21:30:00') ;
+    
+    ok($date1 , $date2) ;
+  
+  }
+}
+#########################
 
 print "\nThe End! By!\n" ;
 

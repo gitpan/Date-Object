@@ -19,7 +19,7 @@ sub Date::O_zone  { Date::Object->new_zone(@_) ;}
 sub Date::check   { Date::Object::check(@_) ;}
 sub Date::timelocal  { Date::Object::timelocal(@_) ;}
 
-class Date::Object [0.03] {
+class Date::Object [0.04] {
 
   no warnings ;
 
@@ -67,11 +67,14 @@ class Date::Object [0.03] {
         if ( $_[1] =~ /mdy/i ) {
           ( $m , $d , $y , $h , $min , $s ) = @match ;
         }
+        elsif ( $_[1] =~ /dmy/i ) {
+          ( $d , $m , $y , $h , $min , $s ) = @match ;
+        }
         elsif ( $_[1] =~ /ymd/i ) {
           ( $y , $m , $d , $h , $min , $s ) = @match ;
         }
         else {
-          ( $d , $m , $y , $h , $min , $s ) = @match ;
+          ( $y , $m , $d , $h , $min , $s ) = @match ;
         }
       
         $time = $this->timelocal($y , $m , $d , $h , $min , $s , 0 ) ;
@@ -163,6 +166,20 @@ class Date::Object [0.03] {
       }
       else { $this->{isdst} = 0 ;}
     }
+  }
+  
+  sub set_serial ($serial) {
+    my ($time , $zone) = ( $serial =~ /^(\d+)(\d{4})$/ );
+    
+    if ( $zone > 1200 ) { $zone -= 1200 ;}
+    elsif ( $zone == 1200 ) { $zone = 0 ;}
+    else { $zone *= -1 ;}
+    
+    $zone =~ s/(\d\d)$/\.$1/ ;
+    $zone =~ s/\.00$// ;
+    $zone *= 1 ;
+    
+    $this->set_zone($zone , $time) ;
   }
   
   sub _format_zone ($zone) {
@@ -544,6 +561,15 @@ class Date::Object [0.03] {
     my $date = "$this->{day}-$this->{month}-$this->{year}" ;
     return $date ;
   }
+  
+  sub STORABLE_freeze ($cloning) {
+    return $this->serial ;
+  }
+  
+  sub STORABLE_thaw ($cloning , $serial) {
+    $this->set_serial($serial) ;
+    return ;
+  }
 
 }
 
@@ -635,13 +661,14 @@ To create a I<Date::Object> you can use different types of arguments:
 
   Date::Object->new( 2004 , 12 , 25 , 15 , 30 , 59 ) ;
 
-*> DD/MM/YY HH:MM:SS formats:
+*> YYYY/MM/DD HH:MM:SS formats:
 
-  Date::Object->new( "25/12/2004 15:30:59" ) ;
+  Date::Object->new( "2004/12/25 15:30:59" ) ;
+  Date::Object->new( "2004/12/25 15:30:59" , 'ymd' ) ;
+  
   Date::Object->new( "25/12/2004 15:30:59" , 'dmy' ) ;
   
   Date::Object->new( "12/25/2004 15:30:59" , 'mdy' ) ;
-  Date::Object->new( "2004/12/25 15:30:59" , 'ymd' ) ;
 
 *> Date::Object
 
